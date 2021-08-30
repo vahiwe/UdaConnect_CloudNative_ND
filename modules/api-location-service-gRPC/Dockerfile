@@ -1,8 +1,7 @@
-FROM python:3.7-alpine
+FROM python:3.7
 
 WORKDIR .
 
-RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev postgresql-dev g++ musl-dev python3-dev
 COPY requirements.txt requirements.txt
 RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
