@@ -22,9 +22,12 @@ class LocationResource(Resource):
     @accepts(schema=LocationSchema)
     @responds(schema=LocationSchema)
     def post(self) -> Location:
-        request.get_json()
-        location: Location = LocationService.create(request.get_json())
-        return location
+        try:
+            request.get_json()
+            location: Location = LocationService.create(request.get_json())
+            return location
+        except Exception as e:
+            return {"error": str(e)}, 400
 
     @responds(schema=LocationSchema)
     def get(self, location_id) -> Location:

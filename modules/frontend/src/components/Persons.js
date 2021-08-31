@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import Connection from "./Connection";
-
+import { environment } from "./environment"
 class Persons extends Component {
   constructor(props) {
     super(props);
     // TODO: endpoint should be abstracted into a config variable
-    this.endpoint_url = "http://localhost:30001/api/persons";
+    this.endpoint_url = `${environment.apiUrl}/api/persons`;
     this.state = {
       persons: [],
       display: null,
