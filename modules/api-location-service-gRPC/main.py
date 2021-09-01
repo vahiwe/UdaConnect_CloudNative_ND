@@ -16,16 +16,16 @@ producer = KafkaProducer(bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
                          dumps(x).encode('utf-8'))
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
 
 class LocationServicer(location_pb2_grpc.LocationServiceServicer):
     def Get(self, request, context):
         id = request.id
-        logging.info("Get transaction of ID ", id)
+        logging.info("Get transaction of ID ", {id: id})
         location = session.query(Location).filter(Location.id == id).first()
-        logging.info("location ===>",location)
+        logging.info("location ===>",{location: location})
         if location is None:
             return location_pb2.LocationSchema(id=id, person_id=None, longitude=None, latitude=None, creation_time=None)
         else:
@@ -49,13 +49,14 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
             "creation_time": request.creation_time,
         }
         
-        logging.info("request_value ==>",request_value)
+        logging.info("request_value ==>",{request_value: request_value})
         try:
             producer.send(KAFKA_TOPIC, request_value)
         
             logging.info("Location Stored in Kafka!")
             return location_pb2.LocationSchema(**request_value)
         except Exception as e:
+            logging.info("An error occured")
             logging.error("Exception occured: ", e)
             return location_pb2.LocationSchema(**{
                 "id": None,

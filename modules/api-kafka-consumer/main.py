@@ -10,7 +10,7 @@ KAFKA_PORT = os.environ["KAFKA_PORT"]
 KAFKA_HOST = os.environ["KAFKA_HOST"]
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
 
@@ -24,7 +24,7 @@ consumer = KafkaConsumer(
 
 logging.info("Starting consumer")
 for message in consumer:
-    logging.info("New Location data ",message.value)
+    logging.info("New Location data ",{message: message.value})
     message_value = message.value
     try:
         location_value = {
@@ -34,13 +34,14 @@ for message in consumer:
             "creation_time": message_value["creation_time"],
         }
         
-        logging.info("Location Data ==>",location_value)
+        logging.info("Location Data ==>",{location: location_value})
         location = Location(**location_value)
         session.add(location)
         session.commit()
     
         logging.info("Location created!")
     except Exception as e:
+        logging.info("error!!!")
         logging.error("Exception occured: ", e)
         session.rollback()
 
