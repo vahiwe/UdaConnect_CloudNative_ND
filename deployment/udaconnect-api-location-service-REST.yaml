@@ -60,4 +60,10 @@ spec:
             configMapKeyRef:
               name: db-env
               key: DB_PORT
+        - name: KAFKA_TOPIC
+          value: test
+        - name: KAFKA_PORT
+          value: "9092"
+        - name: KAFKA_HOST
+          value: my-cluster-kafka-bootstrap.my-kafka-project.svc.cluster.local
       restartPolicy: Always
