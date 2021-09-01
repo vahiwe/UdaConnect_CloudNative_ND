@@ -1,10 +1,18 @@
-import time
+import time, os
 from concurrent import futures
 import grpc
 import location_pb2
 import location_pb2_grpc
-from models import session, Location, Person, func
-from geoalchemy2.functions import ST_AsText, ST_Point
+from models import session, Location
+from json import dumps
+from kafka import KafkaProducer
+
+KAFKA_TOPIC = os.environ["KAFKA_TOPIC"]
+KAFKA_PORT = os.environ["KAFKA_PORT"]
+KAFKA_HOST = os.environ["KAFKA_HOST"]
+producer = KafkaProducer(bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
+                         value_serializer=lambda x: 
+                         dumps(x).encode('utf-8'))
 
 class LocationServicer(location_pb2_grpc.LocationServiceServicer):
     def Get(self, request, context):
@@ -30,27 +38,19 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
         request_value = {
             "id": request.id,
             "person_id": request.person_id,
-            "coordinate": ST_Point(request.latitude, request.longitude),
+            "longitude": request.longitude,
+            "latitude": request.latitude,
             "creation_time": request.creation_time,
         }
         
         print("request_value ==>",request_value)
         try:
-            location = Location(**request_value)
-            session.add(location)
-            session.commit()
+            producer.send(KAFKA_TOPIC, request_value)
         
-            print("Location created!")
-            return location_pb2.LocationSchema(**{
-                "id": location.id,
-                "person_id": location.person_id,
-                "longitude": location.longitude,
-                "latitude": location.latitude,
-                "creation_time": location.creation_time.isoformat(),
-            })
+            print("Location Stored in Kafka!")
+            return location_pb2.LocationSchema(**request_value)
         except Exception as e:
             print("Exception occured: ", e)
-            session.rollback()
             return location_pb2.LocationSchema(**{
                 "id": None,
                 "person_id": None,
