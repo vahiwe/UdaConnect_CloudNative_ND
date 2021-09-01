@@ -6,6 +6,7 @@ import location_pb2_grpc
 from models import session, Location
 from json import dumps
 from kafka import KafkaProducer
+import logging
 
 KAFKA_TOPIC = os.environ["KAFKA_TOPIC"]
 KAFKA_PORT = os.environ["KAFKA_PORT"]
@@ -14,12 +15,17 @@ producer = KafkaProducer(bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
 
+logging.basicConfig(
+    level=logging.INFO,
+    filemode='w',
+    format='%(name)s - %(levelname)s - %(message)s')
+
 class LocationServicer(location_pb2_grpc.LocationServiceServicer):
     def Get(self, request, context):
         id = request.id
-        print("Get transaction of ID ", id)
+        logging.info("Get transaction of ID ", id)
         location = session.query(Location).filter(Location.id == id).first()
-        print("location ===>",location)
+        logging.info("location ===>",location)
         if location is None:
             return location_pb2.LocationSchema(id=id, person_id=None, longitude=None, latitude=None, creation_time=None)
         else:
@@ -33,7 +39,7 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
 
 
     def Create(self, request, context):
-        print("Received a message!")
+        logging.info("Received a message!")
 
         request_value = {
             "id": request.id,
@@ -43,14 +49,14 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
             "creation_time": request.creation_time,
         }
         
-        print("request_value ==>",request_value)
+        logging.info("request_value ==>",request_value)
         try:
             producer.send(KAFKA_TOPIC, request_value)
         
-            print("Location Stored in Kafka!")
+            logging.info("Location Stored in Kafka!")
             return location_pb2.LocationSchema(**request_value)
         except Exception as e:
-            print("Exception occured: ", e)
+            logging.error("Exception occured: ", e)
             return location_pb2.LocationSchema(**{
                 "id": None,
                 "person_id": None,
@@ -65,7 +71,7 @@ server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
 location_pb2_grpc.add_LocationServiceServicer_to_server(LocationServicer(), server)
 
 
-print("Server starting on port 5005...")
+logging.info("Server starting on port 5005...")
 server.add_insecure_port("[::]:5005")
 server.start()
 # Keep thread alive

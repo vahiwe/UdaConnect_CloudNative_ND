@@ -1,6 +1,7 @@
 from kafka import KafkaConsumer
 from json import loads
 import os
+import logging
 from models import session, Location, Person, func
 from geoalchemy2.functions import ST_AsText, ST_Point
 
@@ -8,8 +9,10 @@ KAFKA_TOPIC = os.environ["KAFKA_TOPIC"]
 KAFKA_PORT = os.environ["KAFKA_PORT"]
 KAFKA_HOST = os.environ["KAFKA_HOST"]
 
-
-# consumer = KafkaConsumer(TOPIC_NAME)
+logging.basicConfig(
+    level=logging.INFO,
+    filemode='w',
+    format='%(name)s - %(levelname)s - %(message)s')
 
 consumer = KafkaConsumer(
     KAFKA_TOPIC,
@@ -19,9 +22,9 @@ consumer = KafkaConsumer(
      group_id='my-group',
      value_deserializer=lambda x: loads(x.decode('utf-8')))
 
-print("Starting consumer")
+logging.info("Starting consumer")
 for message in consumer:
-    print ("New Location data ",message.value)
+    logging.info("New Location data ",message.value)
     message_value = message.value
     try:
         location_value = {
@@ -31,13 +34,13 @@ for message in consumer:
             "creation_time": message_value["creation_time"],
         }
         
-        print("Location Data ==>",location_value)
+        logging.info("Location Data ==>",location_value)
         location = Location(**location_value)
         session.add(location)
         session.commit()
     
-        print("Location created!")
+        logging.info("Location created!")
     except Exception as e:
-        print("Exception occured: ", e)
+        logging.error("Exception occured: ", e)
         session.rollback()
 
