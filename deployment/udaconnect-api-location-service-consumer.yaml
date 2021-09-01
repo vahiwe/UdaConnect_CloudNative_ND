@@ -47,7 +47,7 @@ spec:
         - name: KAFKA_TOPIC
           value: test
         - name: KAFKA_PORT
-          value: 9092
+          value: "9092"
         - name: KAFKA_HOST
           value: my-cluster-kafka-0.my-kafka-project.svc.cluster.local
       restartPolicy: Always
