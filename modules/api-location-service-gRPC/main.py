@@ -23,9 +23,9 @@ logging.basicConfig(
 class LocationServicer(location_pb2_grpc.LocationServiceServicer):
     def Get(self, request, context):
         id = request.id
-        logging.info("Get transaction of ID ", {id: id})
+        logging.info("Get transaction of ID {}".format(id))
         location = session.query(Location).filter(Location.id == id).first()
-        logging.info("location ===>",{location: location})
+        logging.info("location ===>  {}".format(location))
         if location is None:
             return location_pb2.LocationSchema(id=id, person_id=None, longitude=None, latitude=None, creation_time=None)
         else:
@@ -49,7 +49,7 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
             "creation_time": request.creation_time,
         }
         
-        logging.info("request_value ==>",{request_value: request_value})
+        logging.info("request_value ==> {}".format(request_value))
         try:
             producer.send(KAFKA_TOPIC, request_value)
         
@@ -57,7 +57,7 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
             return location_pb2.LocationSchema(**request_value)
         except Exception as e:
             logging.info("An error occured")
-            logging.error("Exception occured: ", e)
+            logging.error("Exception occured: {}".format(e))
             return location_pb2.LocationSchema(**{
                 "id": None,
                 "person_id": None,
