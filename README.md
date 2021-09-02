@@ -114,9 +114,9 @@ Follow the following commands to setup the kafaka cluster:
 
 - `kubectl create -f deployment/strimzi-kafka/install/cluster-operator/ -n kafka`
 
-- `kubectl create -f deployment/strimzi-kafka/deployment/strimzi-kafka/install/cluster-operator/020-RoleBinding-strimzi-cluster-operator.yaml -n my-kafka-project`
+- `kubectl create -f deployment/strimzi-kafka/install/cluster-operator/020-RoleBinding-strimzi-cluster-operator.yaml -n my-kafka-project`
 
-- `kubectl create -f install/cluster-operator/031-RoleBinding-strimzi-cluster-operator-entity-operator-delegation.yaml -n my-kafka-project`
+- `kubectl create -f deployment/strimzi-kafka/install/cluster-operator/031-RoleBinding-strimzi-cluster-operator-entity-operator-delegation.yaml -n my-kafka-project`
 
 - `kubectl create -n my-kafka-project -f deployment/strimzi-kafka/install/kafka-cluster.yaml`
 
