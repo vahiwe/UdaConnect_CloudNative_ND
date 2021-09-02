@@ -1,4 +1,5 @@
 I seperated the API into five microservices, namely:-
+- Connections microservice
 - Persons microservice
 - Locations REST microservice
 - Locations gRPC microservice
