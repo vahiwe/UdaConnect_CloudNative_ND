@@ -1,4 +1,5 @@
 // export env variables
 export const environment = {
-  apiUrl: 'http://localhost:30001',
+  connectionApiUrl: 'http://localhost:30002',
+  personApiUrl: 'http://localhost:30001',
 };
