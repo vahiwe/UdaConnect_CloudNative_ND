@@ -9,7 +9,7 @@ spec:
   - name: "5001"
     port: 5001
     targetPort: 5000
-    nodePort: 30002
+    nodePort: 30003
   selector:
     service: udaconnect-api-location-service-rest
   type: NodePort
