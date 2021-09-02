@@ -103,6 +103,37 @@ You may notice the odd port numbers being served to `localhost`. [By default, Ku
 Connections to the Kubernetes services have been set up through a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport). (While we would use a technology like an [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) to expose our Kubernetes services in deployment, a NodePort will suffice for development.)
 
 ## Development
+I made use of [Strimzi](https://strimzi.io/) in setting up my Kafka.
+This [guide](https://strimzi.io/docs/operators/latest/quickstart.html) helped a lot in getting everything running.
+
+Follow the following commands to setup the kafaka cluster:
+
+- `kubectl create ns kafka`
+
+- `kubectl create ns my-kafka-project`
+
+- `kubectl create -f deployment/strimzi-kafka/install/cluster-operator/ -n kafka`
+
+- `kubectl create -f deployment/strimzi-kafka/deployment/strimzi-kafka/install/cluster-operator/020-RoleBinding-strimzi-cluster-operator.yaml -n my-kafka-project`
+
+- `kubectl create -f install/cluster-operator/031-RoleBinding-strimzi-cluster-operator-entity-operator-delegation.yaml -n my-kafka-project`
+
+- `kubectl create -n my-kafka-project -f deployment/strimzi-kafka/install/kafka-cluster.yaml`
+
+- `kubectl wait kafka/my-cluster --for=condition=Ready --timeout=300s -n my-kafka-project`
+
+- `kubectl create -n my-kafka-project -f deployment/strimzi-kafka/install/kafka-topic.yaml`
+
+Once all these commands are done you should have kafka cluster with a topic called `test`. You can reference the guide from earlier to know what each of these commands do.
+
+With the Kafka cluster now up and running, you can deploy the main project resources by running the below command:
+
+- `kubectl apply -f deployment/`
+
+All pods, services, configmaps and secrets should be provisioned. You can check the state of all pods by running:
+
+- `kubectl get pods --all-namespaces`
+
 ### New Services
 New services can be created inside of the `modules/` subfolder. You can choose to write something new with Flask, copy and rework the `modules/api` service into something new, or just create a very simple Python application.
 

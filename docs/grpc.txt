@@ -1,0 +1,16 @@
+The gRPC API only has two methods, namely:
+- Create
+- Get
+
+The Get endpoint allows a client retrieve location details
+The Create endpoint allows a client create a new location
+
+I created two scripts to test the functionality of the two methods
+
+To call the Get method, run:
+
+python modules/api-location-service-gRPC/getter.py
+
+ To call the Create method, run:
+
+python modules/api-location-service-gRPC/writer.py

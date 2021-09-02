@@ -1,0 +1,18 @@
+I seperated the API into five microservices, namely:-
+- Persons microservice
+- Locations REST microservice
+- Locations gRPC microservice
+- Kafka Cluster
+- Locations consumer microservice
+
+I added a kafka cluster to store location data that will be processed by a consumer application.
+
+The two locations microservice store their data in the kafka cluster. 
+My rationale behind that is an assumption that location data will be sent to the application 
+based on the movement of the users of the application. 
+So this endpoint will receive a lot of data which might crash the system.
+Adding a Kafta Cluster to the architecture, allows the location data to be processed asynchronously and reduces the load on the system.
+
+I created a REST and gRPC API for the location service to accomodate for different clients.
+REST was created because its the industry standard and a lot of clients will most likely make use of it.
+gRPC was created to provide better perfomance for any client ready to interface with it.
