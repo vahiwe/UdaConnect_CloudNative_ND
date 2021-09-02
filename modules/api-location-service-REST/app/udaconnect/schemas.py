@@ -1,10 +1,6 @@
 from app.udaconnect.models import Location
-from geoalchemy2.types import Geometry as GeometryType
 from marshmallow import Schema, fields, pre_load
-from marshmallow_sqlalchemy.convert import ModelConverter as BaseModelConverter
 from datetime import datetime
-import time
-
 class MyDateTimeField(fields.DateTime):
     def _deserialize(self, value, attr, data, **kwargs):
         if isinstance(value, datetime):
@@ -16,7 +12,6 @@ class LocationSchema(Schema):
     person_id = fields.Integer()
     longitude = fields.String(attribute="longitude")
     latitude = fields.String(attribute="latitude")
-    # creation_time = fields.DateTime(format='%Y-%m-%dT%H:%M:%SZ')
     creation_time = MyDateTimeField()
 
     class Meta:

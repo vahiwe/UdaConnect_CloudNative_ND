@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 from app.udaconnect.models import Location
 from app.udaconnect.schemas import (
